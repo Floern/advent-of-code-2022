@@ -1,6 +1,4 @@
 import java.io.File
-import java.math.BigInteger
-import java.math.BigInteger.ZERO
 import java.util.LinkedList
 
 val input = File("input.txt").readLines()
@@ -52,32 +50,32 @@ with("Part A") {
 
 with("Part B") {
 	data class Monkey(
-		val items: LinkedList<BigInteger>,
-		val operation: (BigInteger) -> BigInteger,
-		val testTarget: (BigInteger) -> Int,
-		val testDivider: BigInteger,
-		var inspectCount: Int = 0
+		val items: LinkedList<Long>,
+		val operation: (Long) -> Long,
+		val testTarget: (Long) -> Int,
+		val testDivider: Long,
+		var inspectCount: Long = 0
 	)
 
 	val monkeys = input.chunked(7).map { monkeyLines ->
-		val items = monkeyLines[1].substring(18).split(", ").map { BigInteger(it) }
+		val items = monkeyLines[1].substring(18).split(", ").map { it.toLong() }
 		val (op, param) = monkeyLines[2].substring(19 + 4).split(" ")
-		val operation: (BigInteger) -> BigInteger = when (op) {
-			"+" -> if (param == "old") { { lv -> lv + lv } } else { { lv -> lv + BigInteger(param) } }
-			"*" -> if (param == "old") { { lv -> lv * lv } } else { { lv -> lv * BigInteger(param) } }
+		val operation: (Long) -> Long = when (op) {
+			"+" -> if (param == "old") { { lv -> lv + lv } } else { { lv -> lv + param.toLong() } }
+			"*" -> if (param == "old") { { lv -> lv * lv } } else { { lv -> lv * param.toLong() } }
 			else -> error("unknown op")
 		}
-		val testDivider = BigInteger(monkeyLines[3].substring(21))
+		val testDivider = monkeyLines[3].substring(21).toLong()
 		val testTrueMonkey = monkeyLines[4].substring(29).toInt()
 		val testFalseMonkey = monkeyLines[5].substring(30).toInt()
-		val testTarget: (BigInteger) -> Int = { lv -> if (lv % testDivider == ZERO) testTrueMonkey else testFalseMonkey }
+		val testTarget: (Long) -> Int = { lv -> if (lv % testDivider == 0L) testTrueMonkey else testFalseMonkey }
 
 		Monkey(items.toCollection(LinkedList()), operation, testTarget, testDivider)
 	}
 
 	val globalMod = monkeys
 		.map { it.testDivider }
-		.fold(BigInteger.ONE) { acc, div -> acc * div }
+		.fold(1L) { acc, div -> acc * div }
 
 	repeat(10_000) { round ->
 		monkeys.forEach { monkey ->
@@ -94,7 +92,7 @@ with("Part B") {
 	val monkeyBiz = monkeys
 		.sortedByDescending { monkey -> monkey.inspectCount }
 		.take(2)
-		.fold(BigInteger.ONE) { acc, monkey -> acc * monkey.inspectCount.toBigInteger() }
+		.fold(1L) { acc, monkey -> acc * monkey.inspectCount }
 
 	println(this + ": " + monkeyBiz)
 }
