@@ -50,6 +50,5 @@ with("Part A") {
 
 
 with("Part B") {
-
-	println("$this: ")
+	println("$this: reindeer smoothie?")
 }
